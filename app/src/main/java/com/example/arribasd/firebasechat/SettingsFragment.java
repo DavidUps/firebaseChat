@@ -53,29 +53,24 @@ public class SettingsFragment extends Fragment {
         imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPictureDialog();
+                //showPictureDialog();
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK,null);
+                galleryIntent.setType("image/*");
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
+                chooser.putExtra(Intent.EXTRA_TITLE, "Choose an image or take it");
+
+                Intent[] intentArray =  {cameraIntent};
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                startActivityForResult(chooser, 1);
             }
 
             private void showPictureDialog() {
-                AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
-                pictureDialog.setTitle("Select Action");
-                String[] pictureDialogItem = { "Select photo from galery", "Select photo from camera"};
-                pictureDialog.setItems(pictureDialogItem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case 0:
-                                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(galleryIntent, GALLERY);
-                                break;
-                            case 1:
-                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(cameraIntent,CAMERA);
-                                break;
-                        }
-                    }
-                });
-                pictureDialog.show();
+
             }
         });
         return view;
@@ -87,7 +82,7 @@ public class SettingsFragment extends Fragment {
         if(resultCode == RESULT_CANCELED){
             return;
         }
-        if(requestCode == GALLERY){
+        if (requestCode == GALLERY){
             if(data != null){
                 Uri contentUri = data.getData();
                 try{
@@ -99,11 +94,6 @@ public class SettingsFragment extends Fragment {
                     e.printStackTrace();
                     Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
                 }
-            }else if (requestCode == CAMERA){
-                Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-                imgProfile.setImageBitmap(thumbnail);
-                saveImage(thumbnail);
-                Toast.makeText(getActivity(), "Image Saved", Toast.LENGTH_SHORT).show();
             }
         }
     }
