@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
         }else{
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                 final DatabaseReference myRef = database.getReference("users/"+user.getUid());
                 myRef.child("email").setValue(user.getEmail());
                 myRef.child("name").setValue(user.getDisplayName());
-                startActivity(new Intent(this, LoginActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
             } else {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
             }
