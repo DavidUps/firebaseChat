@@ -49,24 +49,17 @@ public class SettingsFragment extends Fragment {
         imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //showPictureDialog();
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,null);
-                galleryIntent.setType("image/*");
-                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent galleryIntent;
+                Intent cameraIntent;
 
                 Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
+                chooser.putExtra(Intent.EXTRA_INTENT, cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE));
+                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent = new Intent(Intent.ACTION_PICK,null));
                 chooser.putExtra(Intent.EXTRA_TITLE, "Choose an image or take it");
 
                 Intent[] intentArray =  {cameraIntent};
                 chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
                 startActivityForResult(chooser, 1);
-            }
-
-            private void showPictureDialog() {
-
             }
         });
         return view;
