@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,6 +39,7 @@ public class SettingsFragment extends Fragment {
     private final int GALLERY = 1;
     private final String IMAGE_DIRECTORY = "/sdcard/DCIM";
     private final int CAMERA = 1;
+    FirebaseStorage storage;
 
     public SettingsFragment() {}
 
@@ -44,8 +55,19 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        //Referencia de la base de datos.
+        storage = FirebaseStorage.getInstance("gs://fir-chat-78c59.appspot.com/");
+        StorageReference downloadImg = storage.getReference("profileImage/" + FirebaseAuth.getInstance().getUid() + ".jpg");
+
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         imgProfile = view.findViewById(R.id.ivProfile);
+        //Poner Imagen desde Firebase.
+        Glide.with(getActivity())
+                .using(new FirebaseImageLoader())
+                .load(downloadImg)
+                .into(imgProfile);
+        //Cambiar Imagen.
         imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,11 +79,12 @@ public class SettingsFragment extends Fragment {
                 chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent = new Intent(Intent.ACTION_PICK,null));
                 chooser.putExtra(Intent.EXTRA_TITLE, "Choose an image or take it");
 
-                Intent[] intentArray =  {cameraIntent};
+                Intent[] intentArray =  {cameraIntent, galleryIntent};
                 chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
                 startActivityForResult(chooser, 1);
             }
         });
+
         return view;
     }
 
@@ -71,14 +94,19 @@ public class SettingsFragment extends Fragment {
         if(resultCode == RESULT_CANCELED){
             return;
         }
+        StorageReference uploadImg = storage.getReference("profileImage");
+
         if (requestCode == GALLERY){
             if(data != null){
                 Uri contentUri = data.getData();
                 try{
+                    //Subir la imagen a Firebase.
+                    //Se crea un bitmap, un ByteArrayOutputStream, se hace un compress y en el UploadTask se pone la ruta y se castea.
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), contentUri);
-                    String path = saveImage(bitmap);
-                    Toast.makeText(getActivity(), "Image Saved", Toast.LENGTH_SHORT).show();
                     imgProfile.setImageBitmap(bitmap);
+                    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bout);
+                    UploadTask uploadTask = uploadImg.child(FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg").putBytes(bout.toByteArray());
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
@@ -87,24 +115,4 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private String saveImage(Bitmap bitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,90,bytes);
-        File wallpaperDirectory = new File(Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-        if(!wallpaperDirectory.exists()){
-            wallpaperDirectory.mkdir();
-        }
-        try{
-            File f = new File(wallpaperDirectory, Calendar.getInstance().getTimeInMillis() + ".jpg");
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-            MediaScannerConnection.scanFile(getActivity(), new String[]{f.getPath()}, new String[]{"image/jpeg"}, null);
-            fo.close();
-            Log.d("TAG", "file Saved: ---> " + f.getAbsolutePath());
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 }
