@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.example.arribasd.firebasechat.R;
 import com.example.arribasd.firebasechat.fragments.ChatsFragment;
 import com.example.arribasd.firebasechat.fragments.SettingsFragment;
-import com.example.arribasd.firebasechat.fragments.ChatsListFragment;
+import com.example.arribasd.firebasechat.fragments.UsersListFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,7 +31,7 @@ public class MainActivity extends BaseActivity implements ChatsFragment.OnFragme
         fabNewChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new ChatsListFragment()).addToBackStack("ChatsList").commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new UsersListFragment()).addToBackStack("ChatsList").commit();
             }
         });
 

@@ -12,16 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.arribasd.firebasechat.R;
-import com.example.arribasd.firebasechat.adapters.ChatsListAdapter;
+import com.example.arribasd.firebasechat.adapters.UsersListAdapter;
 import com.example.arribasd.firebasechat.models.User;
-import com.firebase.ui.auth.AuthUI;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
@@ -29,24 +26,23 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ChatsListFragment.OnFragmentInteractionListener} interface
+ * {@link UsersListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ChatsListFragment#newInstance} factory method to
+ * Use the {@link UsersListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChatsListFragment extends Fragment {
-
-    String userId,userName,status;
+public class UsersListFragment extends Fragment {
 
     private ChatsFragment.OnFragmentInteractionListener mListener;
 
+    UsersListAdapter usersListAdapter;
 
-    public ChatsListFragment() {
+    public UsersListFragment() {
         // Required empty public constructor
     }
 
-    public static ChatsListFragment newInstance(String param1, String param2) {
-        ChatsListFragment fragment = new ChatsListFragment();
+    public static UsersListFragment newInstance(String param1, String param2) {
+        UsersListFragment fragment = new UsersListFragment();
         return fragment;
     }
 
@@ -58,7 +54,7 @@ public class ChatsListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chats_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_users_list, container, false);
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
         final ArrayList<User> userList = new ArrayList();
@@ -67,19 +63,19 @@ public class ChatsListFragment extends Fragment {
         rvChatList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
 
-        final DatabaseReference databaseReference = firebaseDatabase.getReference("users/").child(FirebaseAuth.getInstance().getUid() + "/chats");
+        final DatabaseReference databaseReference = firebaseDatabase.getReference("users");
 
 
         ChildEventListener chatsList = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("hola", "User: " + dataSnapshot.child("with").getValue());
-                userId=dataSnapshot.child("with").getValue().toString();
+                userList.add(new User(dataSnapshot.getKey().toString(), dataSnapshot.child("name").getValue().toString(),"0"));
+                usersListAdapter.setUsers(userList);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                userId=dataSnapshot.child("with").getValue().toString();
             }
 
             @Override
@@ -99,34 +95,11 @@ public class ChatsListFragment extends Fragment {
         };
 
         FirebaseStorage storage  = FirebaseStorage.getInstance("gs://fir-chat-78c59.appspot.com/");
-        final DatabaseReference myRef = firebaseDatabase.getReference("users").child(FirebaseAuth.getInstance().getUid());
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.child("name").getValue(String.class);
-                userName = value;
-                value = dataSnapshot.child("status").getValue(String.class);
-                status = value;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        if (status.equals("1")){
-            status = "online";
-        }else{
-            status = "offline";
-        }
-
-        userList.add(new User(userId, userName, status));
 
         databaseReference.addChildEventListener(chatsList);
 
-        ChatsListAdapter chatsListAdapter = new ChatsListAdapter(userList);
-        rvChatList.setAdapter(chatsListAdapter);
+        usersListAdapter = new UsersListAdapter(userList);
+        rvChatList.setAdapter(usersListAdapter);
 
         return view;
     }
