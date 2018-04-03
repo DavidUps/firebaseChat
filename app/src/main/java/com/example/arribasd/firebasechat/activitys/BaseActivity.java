@@ -1,4 +1,4 @@
-package com.example.arribasd.firebasechat;
+package com.example.arribasd.firebasechat.activitys;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         myRef.child("status").setValue(0);
         super.onPause();

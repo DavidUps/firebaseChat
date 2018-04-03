@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.arribasd.firebasechat">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activitys.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,9 +34,9 @@
             </intent-filter>
         </service>
         -->
-        <activity android:name=".MainActivity" />
-        <activity android:name=".BaseActivity" />
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".activitys.MainActivity" />
+        <activity android:name=".activitys.BaseActivity" />
+        <activity android:name=".activitys.SettingsActivity" />
     </application>
 
 </manifest>

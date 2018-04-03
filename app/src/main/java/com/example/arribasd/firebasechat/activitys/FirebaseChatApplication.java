@@ -1,4 +1,4 @@
-package com.example.arribasd.firebasechat;
+package com.example.arribasd.firebasechat.activitys;
 
 import android.app.Application;
 
