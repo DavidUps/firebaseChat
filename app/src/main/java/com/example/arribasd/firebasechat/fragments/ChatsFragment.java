@@ -52,19 +52,6 @@ public class ChatsFragment extends Fragment {
 
         fabNewChat = view.findViewById(R.id.fabNewChat);
 
-        RecyclerView recyclerView = view.findViewById(R.id.rvChats);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
-        final ArrayList<Chat>chats = new ArrayList<>();
-
-        ArrayList<Message>message = new ArrayList();
-
-        chats.add(new Chat("1234231",message,"david","miguel"));
-        chats.add(new Chat("1234231",message,"david","miguel"));
-        chats.add(new Chat("1234231",message,"david","miguel"));
-        chats.add(new Chat("1234231",message,"david","miguel"));
-
-
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference chatsRefenence = firebaseDatabase.getReference("users/").child(FirebaseAuth.getInstance().getUid() + "/chats");
 
@@ -94,11 +81,6 @@ public class ChatsFragment extends Fragment {
 
             }
         };
-
-        ChatsAdapter chatsAdapter = new ChatsAdapter(chats);
-        recyclerView.setAdapter(chatsAdapter);
-
-
 
         return view;
     }
