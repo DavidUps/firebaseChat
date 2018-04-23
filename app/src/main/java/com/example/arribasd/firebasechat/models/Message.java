@@ -1,41 +1,53 @@
 package com.example.arribasd.firebasechat.models;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by ArribasD on 3/26/2018.
  */
 
 public class Message {
-    String id, sender, timeStamp, data;
+    String id, from, to, message, timestamp;
 
-    public Message(String id, String sender, String timeStamp, String data) {
+    public Message(String id, String from, String to, String message, String timestamp) {
         this.id = id;
-        this.sender = sender;
-        this.timeStamp = timeStamp;
-        this.data = data;
+        this.from = from;
+        this.to = to;
+        this.message = message;
+        this.timestamp = timestamp;
     }
 
-    public String getSender() {
-        return sender;
+    public String getFrom() {
+        return from;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setFrom(String from) {
+        this.from = from;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
+    public String getTo() {
+        return to;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public String getData() {
-        return data;
+    public String getMessage() {
+        return message;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getId() {
@@ -44,5 +56,15 @@ public class Message {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("from", from);
+        result.put("to", to);
+        result.put("message", message);
+        result.put("timestamp", timestamp);
+
+        return result;
     }
 }

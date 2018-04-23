@@ -1,6 +1,7 @@
 package com.example.arribasd.firebasechat.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,11 @@ import java.util.ArrayList;
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.ViewHolderDatos> {
 
     private ArrayList<User> users;
+    private View.OnClickListener myClickListener;
 
-    public UsersListAdapter(ArrayList<User> users){
+    public UsersListAdapter(ArrayList<User> users, View.OnClickListener myClickListener){
         this.users = users;
+        this.myClickListener = myClickListener;
     }
 
     @Override
@@ -29,6 +32,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
     public void onBindViewHolder(UsersListAdapter.ViewHolderDatos holder, int position) {
         User user = users.get(position);
         holder.name.setText(user.getName());
+        holder.itemView.setTag(position);
     }
 
     @Override
@@ -44,8 +48,10 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.View
         public ViewHolderDatos(View itemView) {
             super(itemView);
             name   = itemView.findViewById(R.id.tvName);
+            itemView.setOnClickListener(myClickListener);
             //image   = itemView.findViewById(R.id.imgChat);
         }
+
     }
 
     public void setUsers(ArrayList<User> users) {

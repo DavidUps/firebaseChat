@@ -85,7 +85,6 @@ public class SettingsFragment extends Fragment {
             }
         });
         StorageReference downloadImg = storage.getReference("profileImage/" + FirebaseAuth.getInstance().getUid() + ".jpg");
-        StorageReference defaultImg  = storage.getReference("profileImage/profile.png");
 
         //Poner Imagen desde Firebase.
         Glide.with(getActivity())

@@ -16,6 +16,9 @@ import com.example.arribasd.firebasechat.adapters.ChatsAdapter;
 import com.example.arribasd.firebasechat.models.Chat;
 import com.example.arribasd.firebasechat.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -61,8 +64,36 @@ public class ChatsFragment extends Fragment {
         chats.add(new Chat("1234231",message,"david","miguel"));
         chats.add(new Chat("1234231",message,"david","miguel"));
 
+
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseReference = firebaseDatabase.getReference("users/").child(FirebaseAuth.getInstance().getUid() + "/chats");
+        DatabaseReference chatsRefenence = firebaseDatabase.getReference("users/").child(FirebaseAuth.getInstance().getUid() + "/chats");
+
+        ChildEventListener chatsList = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
 
         ChatsAdapter chatsAdapter = new ChatsAdapter(chats);
         recyclerView.setAdapter(chatsAdapter);

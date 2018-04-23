@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.arribasd.firebasechat.R;
+import com.example.arribasd.firebasechat.fragments.ChatFragment;
 import com.example.arribasd.firebasechat.fragments.ChatsFragment;
 import com.example.arribasd.firebasechat.fragments.SettingsFragment;
 import com.example.arribasd.firebasechat.fragments.UsersListFragment;
@@ -18,20 +19,24 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MainActivity extends BaseActivity implements ChatsFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListenerSettings{
+public class MainActivity extends BaseActivity implements ChatsFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListenerSettings, UsersListFragment.OnFragmentInteractionListenerChat {
 
     FloatingActionButton fabNewChat;
+    UsersListFragment usersListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        usersListFragment = new UsersListFragment();
+
         fabNewChat = findViewById(R.id.fabNewChat);
         fabNewChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new UsersListFragment()).addToBackStack("ChatsList").commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, usersListFragment, "UserList").addToBackStack("UsersList").commit();
+                fabNewChat.setVisibility(View.GONE);
             }
         });
 
@@ -78,5 +83,26 @@ public class MainActivity extends BaseActivity implements ChatsFragment.OnFragme
     @Override
     public void popFragment() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void changeChatFragment(String idWith) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, new ChatFragment().newInstance(idWith), "Chat").addToBackStack("Chat").commit();
+        fabNewChat.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().findFragmentByTag("UserList") != null &&
+                getSupportFragmentManager().findFragmentByTag("UserList").isVisible()) {
+            fabNewChat.setVisibility(View.GONE);
+            getSupportFragmentManager().popBackStack();
+        }else if (getSupportFragmentManager().findFragmentByTag("Chat") != null &&
+                getSupportFragmentManager().findFragmentByTag("Chat").isVisible()) {
+            fabNewChat.setVisibility(View.GONE);
+            getSupportFragmentManager().popBackStack();
+        }else{
+            fabNewChat.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -10,8 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.arribasd.firebasechat.R;
+import com.example.arribasd.firebasechat.activitys.MainActivity;
 import com.example.arribasd.firebasechat.adapters.UsersListAdapter;
 import com.example.arribasd.firebasechat.models.User;
 import com.google.firebase.database.ChildEventListener;
@@ -23,19 +26,12 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UsersListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UsersListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UsersListFragment extends Fragment {
 
     private ChatsFragment.OnFragmentInteractionListener mListener;
 
     UsersListAdapter usersListAdapter;
+    FirebaseDatabase firebaseDatabase;
 
     public UsersListFragment() {
         // Required empty public constructor
@@ -55,7 +51,7 @@ public class UsersListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_list, container, false);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         final ArrayList<User> userList = new ArrayList();
 
@@ -69,7 +65,6 @@ public class UsersListFragment extends Fragment {
         ChildEventListener chatsList = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("hola", "User: " + dataSnapshot.child("with").getValue());
                 userList.add(new User(dataSnapshot.getKey().toString(), dataSnapshot.child("name").getValue().toString(),"0"));
                 usersListAdapter.setUsers(userList);
             }
@@ -98,7 +93,17 @@ public class UsersListFragment extends Fragment {
 
         databaseReference.addChildEventListener(chatsList);
 
-        usersListAdapter = new UsersListAdapter(userList);
+
+        View.OnClickListener myClickListener = new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                int position = (int) view.getTag();
+                Log.d("Position", ""+position);
+                ((MainActivity) getActivity()).changeChatFragment(userList.get(position).getId());
+            }
+        };
+
+        usersListAdapter = new UsersListAdapter(userList, myClickListener);
         rvChatList.setAdapter(usersListAdapter);
 
         return view;
@@ -128,8 +133,7 @@ public class UsersListFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public interface OnFragmentInteractionListenerChat {
+        void changeChatFragment(String idWith);
     }
 }
